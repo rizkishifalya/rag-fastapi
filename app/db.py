@@ -1,21 +1,14 @@
-import os
-import asyncpg
+from sqlmodel import SQLModel, create_engine, Session
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:example@localhost:5432/ragdb")
+# Sesuaikan user/password/database dengan punya kamu
+DATABASE_URL = "postgresql+psycopg2://postgres:example@localhost:5432/ragdb"
 
-_pool = None
+engine = create_engine(DATABASE_URL, echo=True)
 
-async def init_db_pool():
-    global _pool
-    if _pool is None:
-        _pool = await asyncpg.create_pool(DATABASE_URL)
-    return _pool
+def init_db():
+    # Membuat semua tabel (hanya dipakai kalau tanpa alembic)
+    SQLModel.metadata.create_all(engine)
 
-async def close_db_pool():
-    global _pool
-    if _pool:
-        await _pool.close()
-        _pool = None
-
-def get_db():
-    return _pool
+def get_session():
+    with Session(engine) as session:
+        yield session

@@ -3,3 +3,4 @@ uvicorn[standard]
 asyncpg
 requests
 pydantic
+pip install sqlmodel alembic psycopg2-binary
